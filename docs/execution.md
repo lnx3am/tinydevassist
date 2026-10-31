@@ -15,7 +15,7 @@ Status: **M1–M15 completed, including a public adapter, a verified Gradio Zero
 11. [x] Gradio ZeroGPU Space metadata, deployment guide, and public build; alternate Docker image unverified.
 12. [x] Publish model and Space; verify public Space status and one anonymous inference.
 13. [x] Model card, experiment report, architecture finalization.
-14. [x] CI, cleanup, reproduction instructions, CV bullet.
+14. [x] CI, cleanup, and reproduction instructions.
 15. [x] Final link, documentation, CI, local test, and public inference audit; limits recorded.
 
 ## Session 1 report
@@ -140,7 +140,7 @@ Status: **M1–M15 completed, including a public adapter, a verified Gradio Zero
 
 ## Reproducibility and CI audit
 
-- Milestone 14 — **completed**. Pinned the observed source and split SHA-256 values in the deterministic preparation test so CI catches unintended input changes. Baseline inference now refuses to overwrite an existing report before model loading. Reconciled first-baseline and comparison-baseline latency measurements in the README and development guide, and added exact reproduction commands and a truthful CV summary.
+- Milestone 14 — **completed**. Pinned the observed source and split SHA-256 values in the deterministic preparation test so CI catches unintended input changes. Baseline inference now refuses to overwrite an existing report before model loading. Reconciled first-baseline and comparison-baseline latency measurements in the README and development guide, and added exact reproduction commands with measured limits.
 - The published adapter remains public; the Space has not been created because the account lacks the required hosting entitlement. CI does not download weights or claim end-to-end model verification.
 - Next: M15 final link, documentation, and local behavior audit; M11/M12 hosting verification remains pending the external prerequisite.
 
@@ -156,3 +156,8 @@ Status: **M1–M15 completed, including a public adapter, a verified Gradio Zero
 - Milestone 15 — **completed**. Corrected stale dataset, model-selection, development, and README status text. The [audit report](final_audit.md) lists verified checks and remaining limits.
 - The public model and ZeroGPU Space were anonymously confirmed, and a fresh hosted inference smoke returned HTTP 200 plus a nonempty response. The earlier deployment commit passed GitHub Actions; this audit commit requires its own CI check after push.
 - Local quality gates, dry-run training plan, dependency diagnostic, and 49 relative Markdown links were checked. No full retraining or independent quality study was run during this audit.
+
+## Evaluation integrity update
+
+- Refined the README and supporting records to emphasize evaluation safeguards, measured results, and next research steps.
+- Strengthened comparison report validation to reject duplicate prompt IDs and invalid latency/token measurements before aggregation; added offline regression cases. Historical measured results and published model artifacts were not changed.

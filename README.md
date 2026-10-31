@@ -1,6 +1,6 @@
 # TinyDevAssist — tiny developer-support language model
 
-A reproducible small-language-model engineering portfolio project. **Status: bounded CPU baseline, six-step LoRA training, held-out comparison, and text inspection completed. The [adapter](https://huggingface.co/saman-shahroudi/tinydevassist) and [ZeroGPU demo](https://huggingface.co/spaces/saman-shahroudi/tinydevassist-demo) are public; a public inference smoke test passed.**
+A reproducible small-language-model engineering project. **Status: bounded CPU baseline, six-step LoRA training, held-out comparison, and text inspection completed. The [adapter](https://huggingface.co/saman-shahroudi/tinydevassist) and [ZeroGPU demo](https://huggingface.co/spaces/saman-shahroudi/tinydevassist-demo) are public; a public inference smoke test passed.**
 
 ## Goal
 Adapt `HuggingFaceTB/SmolLM2-360M-Instruct` using LoRA for concise answers to developer-support questions about Git, Python, HTTP APIs, and backend debugging. Compare it with the unchanged base model, then publish a model card and Gradio ZeroGPU Space.
@@ -181,13 +181,11 @@ CI checks these hashes through the deterministic preparation test, along with
 linting, formatting, and lightweight unit tests. The published adapter and
 model card are [on Hugging Face](https://huggingface.co/saman-shahroudi/tinydevassist).
 
-## CV summary and next improvements
+## Evaluation safeguards and next improvements
 
-**CV-ready summary:** Built a reproducible CPU developer-support language-model
-experiment using a 36-example project-authored Apache-2.0 seed, deterministic
-24/6/6 data splits, six-step LoRA adaptation of SmolLM2-360M-Instruct,
-paired held-out evaluation, offline CI checks, and a public PEFT adapter
-with model card and a public ZeroGPU Gradio demo verified by a hosted inference smoke test.
+Comparison reports reject duplicate prompt IDs and invalid latency or token
+counts before calculating summary metrics. The six-response review remains a
+text inspection rather than a quality score.
 
 Next improvements are an independently authored evaluation set with expert
 ratings, longer training only after that evaluation exists, and broader hosted

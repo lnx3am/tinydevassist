@@ -39,6 +39,69 @@ def test_comparison_rejects_missing_generation_metrics():
         )
 
 
+def test_comparison_rejects_duplicate_ids():
+    row = {
+        "id": "git-005",
+        "base": {
+            "response": "base",
+            "latency_seconds": 1.0,
+            "input_tokens": 2,
+            "generated_tokens": 3,
+        },
+        "adapter": {
+            "response": "adapter",
+            "latency_seconds": 2.0,
+            "input_tokens": 2,
+            "generated_tokens": 4,
+        },
+    }
+    with pytest.raises(ValueError, match="duplicate evaluation id"):
+        comparison_report([row, row], model_id="model", revision="a" * 40, test_sha256="b" * 64)
+
+
+def test_comparison_rejects_blank_id():
+    generation = {
+        "response": "ok",
+        "latency_seconds": 1.0,
+        "input_tokens": 2,
+        "generated_tokens": 3,
+    }
+    with pytest.raises(ValueError, match="evaluation rows must contain id"):
+        comparison_report(
+            [{"id": " ", "base": generation, "adapter": generation}],
+            model_id="model",
+            revision="a" * 40,
+            test_sha256="b" * 64,
+        )
+
+
+@pytest.mark.parametrize(
+    ("metric", "value"),
+    [
+        ("latency_seconds", -0.1),
+        ("latency_seconds", float("nan")),
+        ("input_tokens", -1),
+        ("input_tokens", True),
+        ("generated_tokens", 1.5),
+    ],
+)
+def test_comparison_rejects_invalid_measurements(metric, value):
+    generation = {
+        "response": "answer",
+        "latency_seconds": 1.0,
+        "input_tokens": 2,
+        "generated_tokens": 3,
+    }
+    generation[metric] = value
+    with pytest.raises(ValueError, match="evaluation"):
+        comparison_report(
+            [{"id": "git-005", "base": generation, "adapter": generation}],
+            model_id="model",
+            revision="a" * 40,
+            test_sha256="b" * 64,
+        )
+
+
 def test_generation_summary_counts_blank_responses():
     rows = [
         {"adapter": {"response": "", "latency_seconds": 1.0, "generated_tokens": 0}},

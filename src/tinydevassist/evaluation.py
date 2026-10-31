@@ -40,18 +40,33 @@ def comparison_report(
 ) -> dict[str, Any]:
     if not rows:
         raise ValueError("evaluation needs at least one held-out example")
+    seen_ids: set[str] = set()
+    required_fields = {"id", "base", "adapter"}
     for row in rows:
-        if not isinstance(row.get("id"), str) or set(row) != {"id", "base", "adapter"}:
+        if not isinstance(row, dict):
+            raise ValueError("evaluation row must be a mapping")
+        row_id = row.get("id")
+        if not isinstance(row_id, str) or not row_id.strip() or set(row) != required_fields:
             raise ValueError("evaluation rows must contain id, base, and adapter")
+        if row_id in seen_ids:
+            raise ValueError(f"duplicate evaluation id: {row_id}")
+        seen_ids.add(row_id)
         for key in ("base", "adapter"):
             item = row[key]
             if not isinstance(item, dict) or not isinstance(item.get("response"), str):
                 raise ValueError("evaluation generation is malformed")
-            if not all(
-                isinstance(item.get(metric), (int, float)) and math.isfinite(item[metric])
-                for metric in ("latency_seconds", "input_tokens", "generated_tokens")
+            latency = item.get("latency_seconds")
+            if (
+                isinstance(latency, bool)
+                or not isinstance(latency, (int, float))
+                or not math.isfinite(latency)
+                or latency < 0
             ):
-                raise ValueError("evaluation metrics must be finite")
+                raise ValueError("evaluation latency must be finite and nonnegative")
+            for metric in ("input_tokens", "generated_tokens"):
+                count = item.get(metric)
+                if isinstance(count, bool) or not isinstance(count, int) or count < 0:
+                    raise ValueError(f"evaluation {metric} must be a nonnegative integer")
     return {
         "schema_version": 1,
         "status": "measured_comparison",

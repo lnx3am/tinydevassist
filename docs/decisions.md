@@ -19,7 +19,7 @@
 ## ADR-003 — Docker-hosted Gradio interface
 
 - **Decision:** Target a Docker Space on port 7860 after local verification.
-- **Context:** Recruiters need a reproducible demo with pinned runtime dependencies.
+- **Context:** Users need a reproducible demo with pinned runtime dependencies.
 - **Alternatives considered:** Standard Gradio Space, external GPU endpoint.
 - **Reason:** A Dockerfile exposes environment and runtime design without requiring paid GPU serving.
 - **Consequences:** Must validate CPU latency/memory and provide a health/smoke check.
@@ -29,7 +29,7 @@
 - **Decision:** Label training and deployment status explicitly, never fabricate measurements or URLs.
 - **Context:** Training depends on hardware and deployment on external authentication.
 - **Alternatives considered:** Publishing demo placeholders as results.
-- **Reason:** CV credibility and reproducibility.
+- **Reason:** Accurate project records and reproducibility.
 - **Consequences:** Missing experiments and blockers remain visible in README and reports.
 
 ## ADR-005 — Lightweight package core with optional ML extras
@@ -83,7 +83,7 @@
 ## ADR-011 — Experimental notebooks alongside production scripts
 
 - **Decision:** Maintain numbered notebooks for dataset exploration and measured experiments; notebooks call project functions/CLIs instead of reimplementing inference and training. Commit only verifiable outputs.
-- **Context:** Recruiters need inspectable analysis, plots, and methodology in addition to runnable production code.
+- **Context:** The project needs inspectable analysis, plots, and methodology in addition to runnable scripts.
 - **Alternatives considered:** Notebooks as the only implementation, empty placeholder notebooks, or no notebooks at all.
 - **Reason:** A reusable CLI provides reproducibility while notebooks communicate analysis and limitations.
 - **Consequences:** Notebook 01 is executed on the tracked 36-row dataset. Notebook 02 is executed only in explicit skip mode because real model inference is blocked. Later training/evaluation notebooks require measured artifacts before reporting findings.
@@ -136,7 +136,7 @@
 - **Reason:** A preflight rejection gives users a clear way to shorten the request while preserving their original question. Showing specific failures gives the demo and model card a checkable limitation.
 - **Consequences:** Some longer questions require fewer requested new tokens or cannot be served through the demo. The text inspection is descriptive and cannot estimate generalization or an error rate.
 
-## ADR-018 — Reconcile portfolio documentation with measured evidence
+## ADR-018 — Reconcile project documentation with measured evidence
 
 - **Decision:** Replace early planning claims in the README and architecture with the actual bounded CPU experiment status, and add short verbatim response examples and reproducibility hashes to the review and model card.
 - **Context:** Early pages still said that no model had been downloaded, trained, or evaluated, while later pages recorded a six-step training run and paired held-out comparison.
@@ -160,12 +160,12 @@
 - **Reason:** Canonical IDs are clearer for users and future deployment without duplicating model weights or changing the tested application behavior.
 - **Consequences:** Any previously configured `HF_MODEL_REPO` or `HF_SPACE_REPO` value outside this workspace must be updated separately. The planned Space remains unpublished and subject to the hosting entitlement blocker.
 
-## ADR-021 — Pin the measured data hashes in CI and state portfolio limits
+## ADR-021 — Pin the measured data hashes in CI and state experiment limits
 
-- **Decision:** Assert the measured source and train/validation/test hashes in the deterministic data-preparation test, refuse to overwrite an existing baseline report, and put exact reproduction commands and a bounded CV summary in the README.
+- **Decision:** Assert the measured source and train/validation/test hashes in the deterministic data-preparation test, refuse to overwrite an existing baseline report, and put exact reproduction commands and measured limits in the README.
 - **Context:** The existing test checked repeatability but would pass after an unintended source or split change. Baseline inference could silently replace an earlier report, and early documentation described the first run without explaining the later matching rerun used for evaluation.
 - **Alternatives considered:** Trusting counts alone, committing generated split files, adding a heavyweight model run to CI, or describing the project as a public deployed assistant.
-- **Reason:** Hash assertions catch accidental changes to the experiment input without model downloads; refusing report replacement protects provenance. The CV wording should describe only the verified local experiment and public adapter.
+- **Reason:** Hash assertions catch accidental changes to the experiment input without model downloads; refusing report replacement protects provenance. The README should describe only verified results and known limits.
 - **Consequences:** Intentional dataset edits require a reviewed hash update and a new experiment. CI remains lightweight; it cannot verify model loading or public inference.
 
 ## ADR-022 — Serve the published adapter through Gradio ZeroGPU
@@ -175,3 +175,11 @@
 - **Alternatives considered:** Upgrade to PRO for the Docker route, wait without a demo, publish a static page without inference, or change the local CPU app into a ZeroGPU-only entry point.
 - **Reason:** The Gradio SDK uses the account's available free ZeroGPU entitlement and reuses the verified public adapter. A separate Space entry point preserves the tested local CPU behavior. Pinning the hosted Python, Gradio, and PyTorch versions makes the runtime more reproducible.
 - **Consequences:** The public Space built and one anonymous inference returned a nonempty response. ZeroGPU queues and quota limits may affect future requests; one pass does not establish uptime or quality. The Docker variant remains unverified.
+
+## ADR-023 — Validate evaluation measurements before aggregation
+
+- **Decision:** Reject duplicate or blank evaluation IDs and require nonnegative, finite latency and integer token counts before building the comparison report.
+- **Context:** The earlier report builder accepted duplicate rows, negative measurements, fractional token counts, and booleans as numbers. These values could produce misleading aggregate metrics even when generation itself succeeded.
+- **Alternatives considered:** Trust the caller, silently drop invalid rows, or coerce values to numbers.
+- **Reason:** Explicit rejection keeps reported sample counts and averages tied to valid, distinct observations.
+- **Consequences:** Malformed input now fails with a clear error; the previously recorded six-row comparison remains unchanged and was not rerun for this validation change.

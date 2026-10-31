@@ -19,6 +19,8 @@ The raw report is written to ignored `outputs/evaluation.json`; it contains
 both response sets, per-generation latency/token counts, methodology, and the
 exact held-out-input hash. It does not create an automatic response-quality
 score: the six project-authored prompts are too small and not independent.
+Report construction rejects duplicate prompt IDs, negative or nonfinite latency,
+and invalid token counts before computing aggregate metrics.
 
 ## Measured comparison (2026-10-27)
 
