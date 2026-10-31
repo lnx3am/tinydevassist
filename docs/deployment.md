@@ -1,5 +1,9 @@
 # Hugging Face deployment
 
+For a separate CPU HTTP service that can run on multiple container platforms,
+see the [portable API guide](portable_deployment.md). The public deployment
+verified below remains the Gradio ZeroGPU Space.
+
 ## Verified public release
 
 - [PEFT adapter and model card](https://huggingface.co/saman-shahroudi/tinydevassist)
@@ -31,4 +35,4 @@ The Space repository must already exist with SDK `gradio` and requested hardware
 
 ## Earlier Docker route
 
-The original Docker Space attempt on `cpu-basic` returned HTTP 402, requiring PRO for that account at the time. The repository retains `space/Dockerfile`, `space/README.md`, and `deploy_hf.py` as an alternate path, but the local Docker daemon was unavailable and that image has not been built or deployed. The verified public demo uses Gradio ZeroGPU instead.
+The original Docker Space attempt on `cpu-basic` returned HTTP 402, requiring PRO for that account at the time. The repository retains `space/Dockerfile`, `space/README.md`, and `deploy_hf.py` as an alternate Gradio path; that specific image has not been built or deployed. The separate root `Dockerfile` packages the locally verified portable CPU API. The verified public demo still uses Gradio ZeroGPU.

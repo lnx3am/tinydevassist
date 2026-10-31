@@ -24,6 +24,7 @@ The `requirements.txt` file provides a minimal editable installation. Optional d
 ```bash
 python -m pip install -e '.[train]'
 python -m pip install -e '.[app]'
+python -m pip install -e '.[api]'
 python -m pip install -e '.[notebooks]'
 ```
 

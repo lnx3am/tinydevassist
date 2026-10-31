@@ -16,6 +16,7 @@ flowchart LR
   D --> F[PEFT adapter]
   F --> G[Fine-tuned evaluation]
   F --> H[Gradio ZeroGPU Space]
+  F --> J[Portable CPU API container]
   E --> I[Comparison report]
   G --> I
 ```
@@ -42,7 +43,7 @@ python -m tinydevassist doctor
 make check
 ```
 
-The `dev`, `train`, and `app` dependency groups are defined in `pyproject.toml`. The measured CPU run used the versions recorded in [training](docs/development.md) and [evaluation](docs/evaluation.md); these are not a cross-platform lockfile. CI runs lint, formatting, and lightweight tests without downloading model weights.
+The `dev`, `train`, `app`, and `api` dependency groups are defined in `pyproject.toml`. The measured CPU run used the versions recorded in [training](docs/development.md) and [evaluation](docs/evaluation.md); these are not a cross-platform lockfile. CI runs lint, formatting, and lightweight tests without downloading model weights.
 
 ## Seed data (Milestone 3)
 
@@ -157,7 +158,17 @@ The [public adapter repository](https://huggingface.co/saman-shahroudi/tinydevas
 and [ZeroGPU Space](https://huggingface.co/spaces/saman-shahroudi/tinydevassist-demo)
 were verified anonymously; the Space returned a nonempty answer to one public smoke request.
 
-The latest deployment milestone passed [GitHub Actions](https://github.com/samanshahroudi/tinydevassist/actions/runs/40598949071). See the [final audit](docs/final_audit.md) for verification scope and remaining limits.
+## Portable CPU API
+
+The root [`Dockerfile`](Dockerfile) and [`api.py`](api.py) package the same
+pinned base model and adapter behind a small JSON API for container platforms.
+It reads the platform's `PORT`, exposes `/healthz` and `/generate`, and supports
+an optional API key. See the [portable deployment guide](docs/portable_deployment.md)
+for local usage and Render, Railway, and Cloud Run settings. This image has not
+been deployed to those platforms. Its local Docker build, health check, and
+real adapter inference smoke test passed.
+
+The published ZeroGPU milestone passed [GitHub Actions](https://github.com/samanshahroudi/tinydevassist/actions/runs/40598949071). CI runs the portable API's offline checks as well. See the [final audit](docs/final_audit.md) for the earlier release verification scope and remaining limits.
 
 ## Reproduce the measured experiment
 

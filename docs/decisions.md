@@ -183,3 +183,11 @@
 - **Alternatives considered:** Trust the caller, silently drop invalid rows, or coerce values to numbers.
 - **Reason:** Explicit rejection keeps reported sample counts and averages tied to valid, distinct observations.
 - **Consequences:** Malformed input now fails with a clear error; the previously recorded six-row comparison remains unchanged and was not rerun for this validation change.
+
+## ADR-024 — Package a separate portable CPU inference API
+
+- **Decision:** Add a root OCI Dockerfile and FastAPI JSON service that reuse the existing pinned CPU adapter generator, bind to the platform's `PORT`, expose `/healthz` and `/generate`, serialize generation per process, and optionally require an API key.
+- **Context:** The verified Gradio ZeroGPU Space is tied to Hugging Face's GPU runtime. A container interface gives the project a deployment path for other platforms without changing the public demo or the measured model.
+- **Alternatives considered:** Repurpose the Gradio Space image, duplicate inference logic for each provider, or include model weights and credentials in the image.
+- **Reason:** One shared inference implementation avoids diverging prompt and decoding behavior. A small HTTP contract and root Dockerfile map to common container services, while an explicit `.dockerignore` keeps checkpoints and secrets out of remote build contexts.
+- **Consequences:** CPU serving still needs sufficient memory and cold-download time. `/healthz` checks configuration only; generation must be verified separately after deployment. The image built locally and generated a nonempty answer from the public adapter; Render, Railway, and Cloud Run remain unverified.

@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup setup-train setup-app setup-notebooks baseline train-plan doctor prepare test lint format format-check check
+.PHONY: setup setup-train setup-app setup-api setup-notebooks baseline train-plan serve-api smoke-api doctor prepare test lint format format-check check
 
 setup:
 	$(PYTHON) -m pip install -e '.[dev]'
@@ -11,6 +11,9 @@ setup-train:
 setup-app:
 	$(PYTHON) -m pip install -e '.[app]'
 
+setup-api:
+	$(PYTHON) -m pip install -e '.[api]'
+
 setup-notebooks:
 	$(PYTHON) -m pip install -e '.[notebooks]'
 
@@ -19,6 +22,12 @@ baseline:
 
 train-plan:
 	$(PYTHON) train_lora.py
+
+serve-api:
+	$(PYTHON) api.py
+
+smoke-api:
+	$(PYTHON) smoke_api.py
 
 doctor:
 	$(PYTHON) -m tinydevassist doctor

@@ -161,3 +161,9 @@ Status: **M1–M15 completed, including a public adapter, a verified Gradio Zero
 
 - Refined the README and supporting records to emphasize evaluation safeguards, measured results, and next research steps.
 - Strengthened comparison report validation to reject duplicate prompt IDs and invalid latency/token measurements before aggregation; added offline regression cases. Historical measured results and published model artifacts were not changed.
+
+## Portable CPU serving preparation
+
+- Added a separate FastAPI JSON service, root OCI Dockerfile, pinned API dependency list, and build-context exclusions for deployments outside Hugging Face. The existing Gradio ZeroGPU Space remains the only verified public endpoint.
+- Added bounded `/generate`, configuration-only `/healthz`, platform `PORT` support, optional `X-API-Key`, a portable API smoke script, and offline API tests. A real local adapter generated a nonempty HTTP response through the API. The [deployment guide](portable_deployment.md) records local commands, container requirements, and provider settings.
+- A local Uvicorn server passed `smoke_api.py` with the real adapter, returning HTTP 200 and a nonempty answer. Docker Desktop's Linux daemon became available after startup. The root image built with a restricted source-only context; its container reported `healthy` and passed a real adapter HTTP inference smoke. A post-generation `docker stats` snapshot read 2.375 GiB (not peak). No Render, Railway, or Cloud Run deployment is claimed; each requires its own runtime logs and remote inference smoke.
